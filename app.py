@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
 import os
+
 import psycopg2
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
@@ -13,11 +14,7 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 
 def get_db_connection():
     return psycopg2.connect(
-        host=DB_HOST,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        port=DB_PORT
+        host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD, port=DB_PORT
     )
 
 
