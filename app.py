@@ -14,7 +14,12 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 
 def get_db_connection():
     return psycopg2.connect(
-        host=DB_HOST, database=DB_NAME, user=DB_USER, password=DB_PASSWORD, port=DB_PORT
+        host=DB_HOST,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        port=DB_PORT,
+        connect_timeout=3,
     )
 
 
@@ -30,16 +35,22 @@ def health():
 
 @app.route("/users")
 def users():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT id, name FROM users;")
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, name FROM users;")
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
 
-    result = [{"id": row[0], "name": row[1]} for row in rows]
-    return jsonify(result)
+        result = [{"id": row[0], "name": row[1]} for row in rows]
+        return jsonify(result), 200
 
+    except Exception as e:
+        return jsonify({
+            "error": "database unavailable",
+            "details": str(e)
+        }), 503
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
