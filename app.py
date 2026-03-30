@@ -25,7 +25,7 @@ def get_db_connection():
 
 @app.route("/")
 def home():
-    return "WorkFlowLab is running - auto-deploy successful!"
+    return "WorkFlowLab is running - auto-deploy successful!!"
 
 
 @app.route("/health")
