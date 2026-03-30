@@ -52,18 +52,20 @@ jobs:
           tags: ghcr.io/jaksoncunha/workflowlab:latest
 
   deploy:
-    runs-on: ubuntu-latest
-    needs: test-and-push
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  runs-on: ubuntu-latest
+  needs: test-and-push
+  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
-    steps:
-      - name: Deploy to Droplet via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd ~/workflowlab
-            docker-compose pull
-            docker-compose up -d
+  steps:
+    - name: Deploy to Droplet via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ~/workflowlab
+          docker pull ghcr.io/jaksoncunha/workflowlab:latest
+          docker-compose stop app
+          docker-compose rm -f app
+          docker-compose up -d app
